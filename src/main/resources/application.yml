@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: enginuity
+  datasource:
+    url: jdbc:postgresql://localhost:5432/enginuity_db
+    username: postgres
+    password: archit
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: archit99765@gmail.com
+    password: rojj nlui wrdb rewr
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  servlet:
+    multipart:
+          max-file-size: 45MB
+          max-request-size: 45MB
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+          key-serializer: org.apache.kafka.common.serialization.StringSerializer
+          value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: analyzer-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        max.poll.records: 10
+        isolation.level: read_committed
+
+    listener:
+      missing-topics-fatal: false
+      concurrency: 3
+
+      ack-mode: manual_immediate
+
+
+
+
+
+
+
+server:
+  port: 8081
+  servlet:
+    context-path: /enginuity
+
+jwt:
+  secret: ${JWT_SECRET_KEY}
+
+cloudinary:
+  cloud-name: dyozkxmm4
+  api-key: 343852892792323
+  api-secret: g5eSBMaZF2uRYC1rV606AF1GcCo
+
+
+
+
+
