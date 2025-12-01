@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -14,6 +15,6 @@ import java.util.List;
 public class AnalyzerResponse {
     private String text;
     private String summary;
-    private List<String> tags;
+    private Set<String> tags;
     private boolean approved;
 }

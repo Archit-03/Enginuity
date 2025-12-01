@@ -5,23 +5,21 @@ import com.project.enginuity.profile.service.FollowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+
 public class FollowController {
     @Autowired
     private FollowService followService;
-    @PostMapping("/{targetUsername}")
+    @PostMapping("/follow/{targetUsername}")
     public ResponseEntity<String> followUser(@AuthenticationPrincipal CustomPrincipal principal,
                                              @PathVariable String targetUsername) {
         String userId= principal.getUserId();
         followService.followUser(userId,targetUsername);
         return ResponseEntity.ok("Followed " + targetUsername);
     }
-    @DeleteMapping("/{targetUsername}")
+    @DeleteMapping("/unfollow/{targetUsername}")
     public ResponseEntity<String> unfollowUser(@AuthenticationPrincipal CustomPrincipal principal,
                                              @PathVariable String targetUsername) {
         String userId= principal.getUserId();

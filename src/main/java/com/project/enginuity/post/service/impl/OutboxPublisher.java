@@ -29,12 +29,6 @@ public class OutboxPublisher {
     public void publishOutboxEvents() {
         List<OutboxEventEntity> outboxEvents = outBoxRepo.findTop10ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING);
         for (OutboxEventEntity event : outboxEvents) {
-
-
-
-
-
-
             try {
                 kafkaTemplate.send("reels.uploaded",event.getPayload()).get();
                 event.setStatus(OutboxStatus.SENT);

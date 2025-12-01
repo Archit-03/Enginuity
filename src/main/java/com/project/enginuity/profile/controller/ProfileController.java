@@ -46,15 +46,31 @@ public class ProfileController {
 
     }
 
-    @GetMapping
-    public ResponseEntity<?> getYourProfile(@AuthenticationPrincipal CustomPrincipal principal){
-        String userId=principal.getUserId();
+    @GetMapping("/{username}")
+    public ResponseEntity<?> getOthersProfile(@AuthenticationPrincipal CustomPrincipal principal,
+                                        @PathVariable String username,
+                                        @RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "10") int size){
+        String currentUserId= principal.getUserId();
+        ProfileResponse profileResponse=profileService.getOtherProfile(username,currentUserId,page,size);
 
-        ProfileResponse profile=profileService.getProfile(userId);
-        if (profile!=null){
-            return new ResponseEntity<>(profile,HttpStatus.FOUND);
+        if (profileResponse!=null){
+            return new ResponseEntity<>(profileResponse,HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyProfile(@AuthenticationPrincipal CustomPrincipal principal,
+                                        @RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "10") int size){
+        String userId= principal.getUserId();
+        ProfileResponse profileResponse=profileService.getMyProfile(userId,page,size);
+        if (profileResponse!=null){
+            return new ResponseEntity<>(profileResponse,HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PatchMapping("/edit")
@@ -87,18 +103,11 @@ public class ProfileController {
     public ResponseEntity<?> searchProfilesByUsername(@RequestParam String username){
         List<ProfileReviewResponse> profiles=profileService.searchProfilesByUsername(username);
         if (profiles!=null && !profiles.isEmpty()){
-            return new ResponseEntity<>(profiles,HttpStatus.FOUND);
+            return new ResponseEntity<>(profiles,HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    @GetMapping("/{username}")
-    public ResponseEntity<?> getProfileByUsername(@PathVariable String username){
-        ProfileResponse profile=profileService.getProfileByUsername(username);
-        if (profile!=null){
-            return new ResponseEntity<>(profile,HttpStatus.FOUND);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+
 
     @GetMapping("/check-username")
     public ResponseEntity<Map<String,Boolean>> isUsernameAvailable(@RequestParam String username){

@@ -1,5 +1,6 @@
 package com.project.enginuity.profile.io;
 
+import com.project.enginuity.post.io.ReelResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,9 @@ public class ProfileResponse {
     private List<String> interests;
     private String githubUrl;
     private int followerCount;
-
-
+    private boolean isMyProfile;
+    private boolean isFollowedByCurrentUser;
+    private List<ReelResponse> reels;
+    private int page;
+    private int totalPages;
 }

@@ -11,6 +11,5 @@ import java.util.List;
 public interface FollowRepo extends JpaRepository<FollowEntity,Long> {
     boolean existsByFollowerAndFollowing(UserProfileEntity follower,UserProfileEntity following);
     void deleteByFollowerAndFollowing(UserProfileEntity follower,UserProfileEntity following);
-    List<FollowEntity> findByFollower(UserProfileEntity follower);
-    List<FollowEntity> findByFollowing(UserProfileEntity following);
+
 }

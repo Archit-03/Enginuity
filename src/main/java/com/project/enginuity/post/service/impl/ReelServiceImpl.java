@@ -6,6 +6,7 @@ import com.project.enginuity.post.entity.OutboxEventEntity;
 import com.project.enginuity.post.entity.ReelEntity;
 import com.project.enginuity.post.entity.ReelFileEntity;
 import com.project.enginuity.post.io.ReelRequest;
+import com.project.enginuity.post.io.ReelResponse;
 import com.project.enginuity.post.io.ReelStatus;
 import com.project.enginuity.post.repository.OutBoxRepo;
 import com.project.enginuity.post.repository.ReelFileRepo;
@@ -18,11 +19,8 @@ import org.mp4parser.IsoFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.*;
-import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
-import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,8 +36,11 @@ public class ReelServiceImpl implements ReelService {
     private OutBoxRepo outBoxRepo;
     @Autowired
     private ReelFileRepo reelFileRepo;
+
     @Autowired
     private ProhibitedWordService prohibitedWordService;
+
+    private double duration;
 
 
     @Override
@@ -55,6 +56,7 @@ public class ReelServiceImpl implements ReelService {
         reel.setUser(user);
         reel.setDescription(reelRequest.getDescription());
         reel.setReelStatus(ReelStatus.UPLOADED);
+        reel.setDurationInSeconds((int) duration);
         reelRepo.save(reel);
 
         ReelFileEntity reelFile = new ReelFileEntity();
@@ -82,6 +84,27 @@ public class ReelServiceImpl implements ReelService {
         }
     }
 
+    @Override
+    public ReelResponse getReelById(String reelId) {
+        ReelEntity reel = reelRepo.findByReelId(reelId);
+        if (reel==null){
+            throw new ReelNotFoundException("Reel with this reelId"+reelId+" not found");
+        }else{
+            return new ReelResponse(reel.getReelId(),reel.getUser().getProfile().getUserName(),reel.getReelUrl(),reel.getThumbnailUrl(),reel.getDescription(),reel.getCreatedAt().toString());
+        }
+    }
+
+    @Override
+    public void deleteReel(String userId, String reelId) {
+        ReelEntity reel = reelRepo.findByReelId(reelId);
+        if (!reel.getUser().getUserId().equals(userId)){
+            throw new RuntimeException("User can not delete other user's reel");
+        }
+        else{
+            reelRepo.delete(reel);
+        }
+    }
+
     private void validateReel(MultipartFile file) throws IOException {
         String contentType = file.getContentType();
         if(contentType == null || (!contentType.equals("video/mp4"))){
@@ -106,7 +129,7 @@ public class ReelServiceImpl implements ReelService {
             // ✅ Step 2: Use IsoFile on our own temp copy
             try (FileChannel fc = new FileInputStream(tempFile).getChannel()) {
                 IsoFile isoFile = new IsoFile(fc);
-                double duration = (double) isoFile.getMovieBox().getMovieHeaderBox().getDuration() /
+                 duration = (double) isoFile.getMovieBox().getMovieHeaderBox().getDuration() /
                         isoFile.getMovieBox().getMovieHeaderBox().getTimescale();
 
                 if (duration > 60 || duration < 30) {
@@ -124,4 +147,16 @@ public class ReelServiceImpl implements ReelService {
 
 
     }
+
+    public ReelResponse mapToReelResponse(ReelEntity reelEntity){
+
+        return new ReelResponse(reelEntity.getReelId(),
+                reelEntity.getUser().getProfile().getUserName(),
+                reelEntity.getReelUrl(),
+                reelEntity.getThumbnailUrl(),
+                reelEntity.getDescription(),
+                reelEntity.getCreatedAt().toString());
+    }
+
+
 }

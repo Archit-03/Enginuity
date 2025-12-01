@@ -1,0 +1,33 @@
+package com.project.enginuity.interaction.entities;
+
+import com.project.enginuity.post.entity.ReelEntity;
+import com.project.enginuity.profile.model.UserEntity;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "tbl_reel_saved",uniqueConstraints = @UniqueConstraint(columnNames = {"user_id,reel_id"}))
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@EntityListeners(AuditingEntityListener.class)
+public class ReelSaveEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",nullable = false)
+    private UserEntity user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reel_id",nullable = false)
+    private ReelEntity reel;
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime savedAt;
+}

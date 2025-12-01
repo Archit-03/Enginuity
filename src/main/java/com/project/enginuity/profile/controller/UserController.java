@@ -19,7 +19,6 @@ import java.time.Duration;
 import java.util.Map;
 
 @RestController
-
 public class UserController {
     @Autowired
     private UserService userService;

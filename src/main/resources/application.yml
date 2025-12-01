@@ -38,23 +38,16 @@ spring:
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      group-id: analyzer-group
       auto-offset-reset: earliest
       enable-auto-commit: false
       properties:
-        max.poll.records: 10
         isolation.level: read_committed
-
-    listener:
-      missing-topics-fatal: false
-      concurrency: 3
-
-      ack-mode: manual_immediate
-
-
-
-
-
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      repositories:
+        enabled: false
 
 
 server:
@@ -69,8 +62,5 @@ cloudinary:
   cloud-name: dyozkxmm4
   api-key: 343852892792323
   api-secret: g5eSBMaZF2uRYC1rV606AF1GcCo
-
-
-
 
 

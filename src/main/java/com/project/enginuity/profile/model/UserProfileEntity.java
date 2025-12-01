@@ -43,6 +43,7 @@ public class UserProfileEntity {
     private String githubUrl;
     private int followerCount=0;
     private int followingCount=0;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;

@@ -1,5 +1,6 @@
 package com.project.enginuity.post.service.impl;
 
+
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -14,7 +15,7 @@ public class ProhibitedWordService {
 
     public ProhibitedWordService(){
         try(BufferedReader br = new BufferedReader(new java.io.InputStreamReader(
-                Objects.requireNonNull(getClass().getResourceAsStream("/prohibited_words.txt"))))) {
+                Objects.requireNonNull(getClass().getResourceAsStream("/prohibited-terms.txt"))))) {
             String line;
             while ((line = br.readLine()) != null) {
                 prohibitedWords.add(line.trim().toLowerCase());

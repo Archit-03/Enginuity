@@ -107,16 +107,20 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mp4parser</groupId>
-			<artifactId>isoparser</artifactId>
+			<artifactId> isoparser</artifactId>
 			<version>1.9.41</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.jcodec</groupId>
-			<artifactId>jcodec</artifactId>
-			<version>0.2.5</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.bytedeco</groupId>
+			<artifactId>javacv-platform</artifactId>
+			<version>1.5.10</version>
+		</dependency>
 
 
 		<dependency>
