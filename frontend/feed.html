@@ -8,49 +8,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <style>
-    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 64px; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
-    .navbar-nav { display: flex; align-items: center; gap: 8px; }
-    .nav-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: transparent; border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--text-secondary); font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.2s ease; }
-    .nav-btn:hover { color: var(--text-primary); background: var(--bg-hover); }
-    .nav-btn.primary { background: var(--accent); color: #000; font-weight: 600; }
-    .nav-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); cursor: pointer; }
-    .main-layout { padding-top: 64px; }
-    .main-content { max-width: 680px; margin: 0 auto; padding: 24px; }
-    .feed-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-    .feed-title { font-size: 22px; font-weight: 700; }
-    .reel-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 20px; transition: all 0.2s ease; }
-    .reel-card:hover { border-color: var(--border-light); box-shadow: var(--shadow-md); }
-    .reel-header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; }
-    .reel-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: var(--bg-hover); border: 2px solid var(--border); cursor: pointer; }
-    .reel-user-info { flex: 1; }
-    .reel-username { font-size: 15px; font-weight: 600; color: var(--text-primary); text-decoration: none; cursor: pointer; }
-    .reel-username:hover { color: var(--accent); }
-    .reel-time { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
-    .reel-video-container { position: relative; background: #000; aspect-ratio: 9/16; max-height: 500px; cursor: pointer; overflow: hidden; }
-    .reel-thumbnail { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .reel-play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); opacity: 0; transition: all 0.2s ease; }
-    .reel-video-container:hover .reel-play-overlay { opacity: 1; }
-    .play-icon { width: 60px; height: 60px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-    .reel-body { padding: 16px 20px; }
-    .reel-description { font-size: 15px; color: var(--text-primary); line-height: 1.5; margin-bottom: 16px; }
-    .reel-actions { display: flex; align-items: center; gap: 20px; }
-    .action-btn { display: flex; align-items: center; gap: 6px; background: transparent; border: none; color: var(--text-secondary); font-size: 14px; cursor: pointer; padding: 6px; border-radius: var(--radius-sm); transition: all 0.2s ease; }
-    .action-btn:hover { color: var(--text-primary); background: var(--bg-hover); }
-    .action-btn.liked { color: #ff4d6a; }
-    .action-icon { font-size: 20px; }
-    .loading-overlay { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; gap: 16px; color: var(--text-muted); }
-    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 40px; text-align: center; color: var(--text-muted); }
-    .empty-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
-    .empty-title { font-size: 20px; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; }
-  </style>
 </head>
 <body>
+  <!-- NAVBAR -->
   <nav class="navbar">
     <a href="feed.html" class="navbar-brand">
       <div class="navbar-logo">T</div>
       <span class="navbar-title">Tech<span>illa</span></span>
     </a>
+    <div class="navbar-search">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search developers..." autocomplete="off" oninput="handleSearch(this.value)" />
+      <div class="search-results" id="searchResults"></div>
+    </div>
     <div class="navbar-nav">
       <a href="feed.html" class="nav-btn active">🏠 Feed</a>
       <a href="upload.html" class="nav-btn primary">+ Upload</a>
@@ -58,121 +28,147 @@
     </div>
   </nav>
 
+  <!-- LAYOUT -->
   <div class="main-layout">
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar-left">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Discover</div>
+        <button class="sidebar-link active" id="sidebarFeed" onclick="setFeedFilter('all')">
+          <span class="icon">🏠</span> For You
+        </button>
+        <button class="sidebar-link" id="sidebarTrending" onclick="setFeedFilter('trending')">
+          <span class="icon">🔥</span> Trending
+        </button>
+        <a href="feed.html?filter=saved" class="sidebar-link" id="sidebarSaved">
+          <span class="icon">🔖</span> Saved
+        </a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Your Space</div>
+        <a href="profile.html" class="sidebar-link">
+          <span class="icon">👤</span> My Profile
+        </a>
+        <a href="upload.html" class="sidebar-link">
+          <span class="icon">🎬</span> Upload Reel
+        </a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Topics</div>
+        <div id="topicLinks"></div>
+      </div>
+      <!-- User info at bottom -->
+      <a href="profile.html" class="sidebar-user" id="sidebarUser">
+        <img id="sidebarAvatar" class="sidebar-user-avatar" src="" alt="" />
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUsername">Loading...</div>
+          <div class="sidebar-user-handle" id="sidebarHandle">@—</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- MAIN FEED -->
     <main class="main-content">
-      <div>
+      <div class="feed-container">
         <div class="feed-header">
-          <h1 class="feed-title">For You</h1>
+          <h1 class="feed-title" id="feedTitle">For You</h1>
           <button class="btn btn-ghost btn-sm" onclick="refreshFeed()">↻ Refresh</button>
         </div>
         <div id="feedContent">
-          <div class="loading-overlay">
-            <div class="spinner"></div>
-            <span>Loading reels...</span>
+          <!-- Skeleton loaders -->
+          <div class="skeleton-card" id="skeletonLoader">
+            <div style="display:flex;gap:12px;margin-bottom:16px;">
+              <div class="skeleton skeleton-avatar"></div>
+              <div style="flex:1">
+                <div class="skeleton skeleton-line" style="width:40%"></div>
+                <div class="skeleton skeleton-line" style="width:25%"></div>
+              </div>
+            </div>
+            <div class="skeleton skeleton-video"></div>
           </div>
+        </div>
+        <div id="feedLoader" class="loading-overlay" style="display:none;">
+          <div class="spinner spinner-lg"></div>
+          <span>Loading more reels...</span>
+        </div>
+        <div id="feedEnd" style="display:none; text-align:center; padding:32px; color:var(--text-muted); font-size:14px;">
+          You've reached the end — <a href="#" onclick="refreshFeed()" style="color:var(--accent);">refresh for more</a>
         </div>
       </div>
     </main>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="sidebar-right">
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">🔥 Trending Topics</div>
+        <div id="trendingTopics">
+          <div class="trending-item">
+            <span class="trending-rank">1</span>
+            <div class="trending-info">
+              <div class="trending-tag">#react</div>
+              <div class="trending-count">2.4k reels</div>
+            </div>
+          </div>
+          <div class="trending-item">
+            <span class="trending-rank">2</span>
+            <div class="trending-info">
+              <div class="trending-tag">#systemdesign</div>
+              <div class="trending-count">1.8k reels</div>
+            </div>
+          </div>
+          <div class="trending-item">
+            <span class="trending-rank">3</span>
+            <div class="trending-info">
+              <div class="trending-tag">#kafka</div>
+              <div class="trending-count">1.2k reels</div>
+            </div>
+          </div>
+          <div class="trending-item">
+            <span class="trending-rank">4</span>
+            <div class="trending-info">
+              <div class="trending-tag">#devops</div>
+              <div class="trending-count">980 reels</div>
+            </div>
+          </div>
+          <div class="trending-item">
+            <span class="trending-rank">5</span>
+            <div class="trending-info">
+              <div class="trending-tag">#machinelearning</div>
+              <div class="trending-count">762 reels</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">👥 Who to Follow</div>
+        <div id="suggestedUsers">
+          <div class="loading-overlay" style="padding:20px;">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card" style="background:linear-gradient(135deg,rgba(0,212,255,0.08),rgba(0,119,204,0.06)); border-color:rgba(0,212,255,0.2);">
+        <div style="font-size:20px; margin-bottom:8px;">🚀</div>
+        <div class="sidebar-card-title">Share Your Knowledge</div>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">Upload your first tech reel and grow your audience.</p>
+        <a href="upload.html" class="btn btn-primary btn-sm w-full">Upload Now</a>
+      </div>
+    </aside>
   </div>
 
-  <div class="video-modal-overlay" id="videoModal" style="position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center;">
-    <button class="video-modal-close" onclick="closeVideoModal()" style="position:fixed;top:20px;right:20px;width:44px;height:44px;background:rgba(255,255,255,0.1);border:none;border-radius:50%;color:#fff;font-size:22px;cursor:pointer;z-index:10;">✕</button>
-    <video id="modalVideo" style="max-height:85vh;object-fit:contain;" controls autoplay></video>
+  <!-- VIDEO VIEWER MODAL -->
+  <div class="video-modal-overlay" id="videoModal">
+    <button class="video-modal-close" onclick="closeVideoModal()">✕</button>
+    <div class="video-modal-content">
+      <video id="modalVideo" class="video-modal-video" controls autoplay></video>
+    </div>
   </div>
 
   <div class="toast-container"></div>
+
   <script src="app.js"></script>
-  <script>
-    if (!requireAuth()) throw new Error('Not authenticated');
-    let myProfile = null;
-    let feedBeforeScore = 9999999999999;
-    let feedLoading = false;
-
-    async function init() {
-      try {
-        myProfile = await api.getMyProfile(0, 1);
-        document.getElementById('navAvatar').src = avatarUrl(myProfile.profilePictureUrl, myProfile.username);
-      } catch {}
-      await loadFeed();
-    }
-
-    async function loadFeed() {
-      if (feedLoading) return;
-      feedLoading = true;
-      try {
-        try { await api.buildFeed(); } catch {}
-        const reels = await api.getFeed(feedBeforeScore, 10);
-        if (!reels || reels.length === 0) {
-          document.getElementById('feedContent').innerHTML = `<div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-title">No reels yet</div></div>`;
-          return;
-        }
-        feedBeforeScore = reels[reels.length - 1].createdAt ? Number(reels[reels.length - 1].createdAt) : feedBeforeScore - 1;
-        const html = reels.map(r => `
-          <div class="reel-card">
-            <div class="reel-header">
-              <img class="reel-avatar" src="${avatarUrl(null, r.username)}" />
-              <div class="reel-user-info">
-                <span class="reel-username">${r.username}</span>
-                <div class="reel-time">now</div>
-              </div>
-            </div>
-            <div class="reel-video-container" onclick="openVideoModal('${r.reelUrl || ''}')">
-              ${r.thumbnailUrl ? `<img class="reel-thumbnail" src="${r.thumbnailUrl}" />` : `<div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;">🎬</div>`}
-              <div class="reel-play-overlay"><div class="play-icon">▶</div></div>
-            </div>
-            <div class="reel-body">
-              <div class="reel-description">${r.description || '—'}</div>
-              <div class="reel-actions">
-                <button class="action-btn" onclick="toggleLike('${r.reelId}')"><span class="action-icon">🤍</span></button>
-                <button class="action-btn"><span class="action-icon">💬</span></button>
-                <button class="action-btn"><span class="action-icon">🔖</span></button>
-              </div>
-            </div>
-          </div>
-        `).join('');
-        document.getElementById('feedContent').innerHTML = html;
-        reels.forEach(r => api.markSeen(r.reelId).catch(() => {}));
-      } catch (err) {
-        document.getElementById('feedContent').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Error loading feed</div></div>`;
-      } finally {
-        feedLoading = false;
-      }
-    }
-
-    async function toggleLike(reelId) {
-      try {
-        const res = await api.toggleLike(reelId);
-        toast(res.liked ? 'Liked!' : 'Unliked', 'success');
-      } catch (err) {
-        toast(err.message || 'Failed', 'error');
-      }
-    }
-
-    function openVideoModal(url) {
-      if (!url || url === 'null') { toast('Video processing', 'info'); return; }
-      document.getElementById('modalVideo').src = url;
-      document.getElementById('videoModal').style.display = 'flex';
-    }
-
-    function closeVideoModal() {
-      const video = document.getElementById('modalVideo');
-      video.pause();
-      video.src = '';
-      document.getElementById('videoModal').style.display = 'none';
-    }
-
-    function refreshFeed() {
-      feedBeforeScore = 9999999999999;
-      loadFeed();
-    }
-
-    window.addEventListener('scroll', () => {
-      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300 && !feedLoading) {
-        loadFeed();
-      }
-    });
-
-    init();
-  </script>
+  <script src="feed.js"></script>
 </body>
 </html>

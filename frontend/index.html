@@ -11,48 +11,216 @@
   <style>
     .auth-step { display: none; }
     .auth-step.active { display: block; }
-    .features-strip { display: flex; gap: 32px; flex-wrap: wrap; margin-top: 48px; }
-    .feature-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-secondary); }
-    .feature-icon { width: 36px; height: 36px; background: var(--accent-dim); border: 1px solid rgba(0,212,255,0.2); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .features-strip {
+      display: flex; gap: 32px; flex-wrap: wrap; margin-top: 48px;
+    }
+    .feature-item {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: var(--text-secondary);
+    }
+    .feature-icon {
+      width: 36px; height: 36px;
+      background: var(--accent-dim); border: 1px solid rgba(0,212,255,0.2);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
     .feature-text strong { display: block; font-weight: 600; color: var(--text-primary); font-size: 14px; }
     .feature-text span { font-size: 12px; color: var(--text-muted); }
+    .floating-card {
+      position: absolute; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 12px 16px; box-shadow: var(--shadow-md);
+      animation: float 6s ease-in-out infinite;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; font-weight: 600; color: var(--text-primary);
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .fc-1 { top: 15%; right: -20px; animation-delay: 0s; }
+    .fc-2 { bottom: 20%; right: 40px; animation-delay: 2s; }
+    .fc-3 { top: 50%; left: -30px; animation-delay: 4s; }
+    .phone-mockup {
+      position: relative; width: 100%; max-width: 280px;
+      margin: 0 auto;
+    }
+    .phone-frame {
+      background: var(--bg-card);
+      border: 2px solid var(--border-light);
+      border-radius: 32px; overflow: hidden;
+      aspect-ratio: 9/19;
+      box-shadow: var(--shadow-lg), 0 0 60px rgba(0,212,255,0.1);
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%; height: 100%;
+      background: var(--bg-primary);
+      display: flex; flex-direction: column;
+    }
+    .phone-header {
+      padding: 16px 16px 8px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .phone-logo {
+      font-size: 14px; font-weight: 800; color: var(--accent);
+    }
+    .phone-notch {
+      width: 80px; height: 20px;
+      background: var(--bg-card); border-radius: 0 0 14px 14px;
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    }
+    .phone-reel {
+      flex: 1; position: relative; overflow: hidden;
+      background: linear-gradient(180deg, rgba(0,212,255,0.08) 0%, rgba(0,0,0,0) 100%);
+    }
+    .phone-reel-bg {
+      width: 100%; height: 100%;
+      background: linear-gradient(145deg, #0f1520 0%, #0a0f1a 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .phone-play { font-size: 40px; opacity: 0.3; }
+    .phone-info {
+      position: absolute; bottom: 16px; left: 16px; right: 16px;
+    }
+    .phone-user { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .phone-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--gradient-main);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #000;
+    }
+    .phone-username { font-size: 12px; font-weight: 600; color: #fff; }
+    .phone-desc { font-size: 10px; color: rgba(255,255,255,0.6); }
+    .phone-actions {
+      position: absolute; right: 12px; bottom: 60px;
+      display: flex; flex-direction: column; gap: 16px; align-items: center;
+    }
+    .phone-action { font-size: 20px; }
+    .phone-action-count { font-size: 9px; color: rgba(255,255,255,0.6); text-align: center; }
+    .forgot-link {
+      font-size: 13px; color: var(--accent); cursor: pointer;
+      text-align: right; display: block; margin-top: -12px; margin-bottom: 20px;
+      text-decoration: none;
+    }
+    .forgot-link:hover { text-decoration: underline; }
+    .otp-resend {
+      text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-muted);
+    }
+    .otp-resend button {
+      background: none; border: none; color: var(--accent);
+      cursor: pointer; font-size: 13px; font-family: var(--font);
+    }
+    .otp-resend button:hover { text-decoration: underline; }
+    .otp-timer { color: var(--text-muted); }
   </style>
 </head>
 <body>
+  <!-- HERO SECTION -->
   <section class="hero-section" id="landingSection">
     <div class="hero-bg"></div>
     <div class="hero-grid"></div>
     <div class="hero-content">
+      <!-- LEFT: TEXT + FEATURES -->
       <div class="hero-text fade-in">
         <div class="navbar-brand" style="margin-bottom: 24px;">
           <div class="navbar-logo">T</div>
           <span class="navbar-title">Tech<span>illa</span></span>
         </div>
-        <div class="hero-badge">Now Live — Join the Community</div>
-        <h1 class="hero-title">Where <span class="gradient-text">Tech</span><br/>Meets People</h1>
-        <p class="hero-subtitle">Share short tech reels, discover trending content from developers worldwide, and grow your engineering community.</p>
+        <div class="hero-badge">
+          Now Live — Join the Community
+        </div>
+        <h1 class="hero-title">
+          Where <span class="gradient-text">Tech</span><br/>Meets People
+        </h1>
+        <p class="hero-subtitle">
+          Share short tech reels, discover trending content from developers worldwide, and grow your engineering community.
+        </p>
         <div class="hero-cta">
-          <button class="btn btn-primary btn-lg" onclick="showSection('auth')">Get Started Free</button>
-          <button class="btn btn-secondary btn-lg" onclick="showSection('auth', 'login')">Sign In</button>
+          <button class="btn btn-primary btn-lg" onclick="showSection('auth')">
+            Get Started Free
+          </button>
+          <button class="btn btn-secondary btn-lg" onclick="showSection('auth', 'login')">
+            Sign In
+          </button>
         </div>
         <div class="features-strip">
           <div class="feature-item">
             <div class="feature-icon">🎬</div>
-            <div class="feature-text"><strong>Tech Reels</strong><span>30–60 sec clips</span></div>
+            <div class="feature-text">
+              <strong>Tech Reels</strong>
+              <span>30–60 sec clips</span>
+            </div>
           </div>
           <div class="feature-item">
             <div class="feature-icon">🤖</div>
-            <div class="feature-text"><strong>AI Moderation</strong><span>Smart content review</span></div>
+            <div class="feature-text">
+              <strong>AI Moderation</strong>
+              <span>Smart content review</span>
+            </div>
           </div>
           <div class="feature-item">
             <div class="feature-icon">⚡</div>
-            <div class="feature-text"><strong>Smart Feed</strong><span>Personalized for you</span></div>
+            <div class="feature-text">
+              <strong>Smart Feed</strong>
+              <span>Personalized for you</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: PHONE MOCKUP + AUTH CARD -->
+      <div style="display:flex; justify-content:center; align-items:center; position:relative;">
+        <div class="phone-mockup">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="phone-header">
+                <span class="phone-logo">Techilla</span>
+                <span style="font-size:16px;">🔔</span>
+              </div>
+              <div class="phone-reel">
+                <div class="phone-reel-bg">
+                  <div class="phone-play">▶️</div>
+                </div>
+                <div class="phone-info">
+                  <div class="phone-user">
+                    <div class="phone-avatar">A</div>
+                    <span class="phone-username">@archit_dev</span>
+                  </div>
+                  <div class="phone-desc">Building a Kafka-based event streaming pipeline in 45 seconds... 🔥</div>
+                </div>
+                <div class="phone-actions">
+                  <div>
+                    <div class="phone-action">❤️</div>
+                    <div class="phone-action-count">4.2k</div>
+                  </div>
+                  <div>
+                    <div class="phone-action">💬</div>
+                    <div class="phone-action-count">128</div>
+                  </div>
+                  <div>
+                    <div class="phone-action">🔖</div>
+                    <div class="phone-action-count">Save</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Floating cards -->
+          <div class="floating-card fc-1">
+            <span>🔥</span> Trending in #React
+          </div>
+          <div class="floating-card fc-2">
+            <span>👥</span> 12k Developers
           </div>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- AUTH SECTION -->
   <section class="hero-section" id="authSection" style="display:none;">
     <div class="hero-bg"></div>
     <div class="hero-grid"></div>
@@ -62,7 +230,8 @@
         <span class="navbar-title">Tech<span>illa</span></span>
       </a>
 
-      <div class="auth-card auth-step active" id="stepLogin">
+      <!-- LOGIN STEP -->
+      <div class="auth-card auth-step" id="stepLogin">
         <div class="auth-tabs">
           <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Sign In</button>
           <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Create Account</button>
@@ -83,12 +252,15 @@
             </div>
           </div>
           <a class="forgot-link" onclick="showStep('stepForgot')">Forgot password?</a>
-          <button type="submit" class="btn btn-primary w-full" id="loginBtn">Sign In</button>
+          <button type="submit" class="btn btn-primary w-full" id="loginBtn">
+            Sign In
+          </button>
         </form>
         <div class="divider">or</div>
         <button class="btn btn-ghost w-full" onclick="switchAuthTab('register')">Create a new account</button>
       </div>
 
+      <!-- REGISTER STEP -->
       <div class="auth-card auth-step" id="stepRegister">
         <div class="auth-tabs">
           <button class="auth-tab" id="tabLoginR" onclick="switchAuthTab('login')">Sign In</button>
@@ -117,12 +289,15 @@
             </div>
             <span class="form-error" id="confirmError">Passwords do not match</span>
           </div>
-          <button type="submit" class="btn btn-primary w-full" id="registerBtn">Create Account</button>
+          <button type="submit" class="btn btn-primary w-full" id="registerBtn">
+            Create Account
+          </button>
         </form>
         <div class="divider">or</div>
         <button class="btn btn-ghost w-full" onclick="switchAuthTab('login')">Sign in to existing account</button>
       </div>
 
+      <!-- OTP VERIFY STEP -->
       <div class="auth-card auth-step" id="stepOtp">
         <div style="text-align:center; margin-bottom:28px;">
           <div style="font-size:40px; margin-bottom:12px;">📨</div>
@@ -140,12 +315,16 @@
           </div>
           <button type="submit" class="btn btn-primary w-full mt-2" id="otpBtn" style="margin-top:24px;">Verify Code</button>
         </form>
-        <div class="otp-resend">Didn't get it? <button onclick="handleResendOtp()" id="resendBtn">Resend OTP</button><span class="otp-timer" id="otpTimer"></span></div>
+        <div class="otp-resend">
+          Didn't get it? <button onclick="handleResendOtp()" id="resendBtn">Resend OTP</button>
+          <span class="otp-timer" id="otpTimer"></span>
+        </div>
         <div style="text-align:center; margin-top:16px;">
           <button class="btn btn-ghost btn-sm" onclick="showStep('stepLogin')">← Back to sign in</button>
         </div>
       </div>
 
+      <!-- FORGOT PASSWORD STEP -->
       <div class="auth-card auth-step" id="stepForgot">
         <div style="text-align:center; margin-bottom:28px;">
           <div style="font-size:40px; margin-bottom:12px;">🔑</div>
@@ -167,6 +346,7 @@
         </div>
       </div>
 
+      <!-- RESET PASSWORD STEP -->
       <div class="auth-card auth-step" id="stepReset">
         <div style="text-align:center; margin-bottom:28px;">
           <div style="font-size:40px; margin-bottom:12px;">🔐</div>
@@ -188,15 +368,18 @@
           <button type="submit" class="btn btn-primary w-full">Reset Password</button>
         </form>
       </div>
+
     </div>
   </section>
 
+  <!-- CREATE PROFILE MODAL -->
   <div class="modal-overlay" id="createProfileModal">
     <div class="modal">
       <div class="modal-header">
         <h3 class="modal-title">Complete Your Profile</h3>
         <span style="font-size:13px; color:var(--text-muted);">Step 2 of 2</span>
       </div>
+      <p style="color:var(--text-muted); font-size:14px; margin-bottom:24px;">Tell the community who you are — you can always edit this later.</p>
       <form id="createProfileForm" onsubmit="handleCreateProfile(event)">
         <div class="form-group" style="text-align:center;">
           <div id="profilePicPreview" style="width:80px;height:80px;border-radius:50%;background:var(--accent-dim);border:2px dashed var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:32px;cursor:pointer;overflow:hidden;position:relative;">
@@ -207,12 +390,34 @@
           <label class="form-label" style="text-align:center; cursor:pointer;" onclick="document.getElementById('profilePicInput').click()">Upload profile photo</label>
         </div>
         <div class="form-group">
-          <label class="form-label">Username</label>
-          <input type="text" class="form-control" id="cpUsername" placeholder="your_handle" required />
+          <label class="form-label">Username <span style="color:var(--error)">*</span></label>
+          <input type="text" class="form-control" id="cpUsername" placeholder="your_handle" required oninput="checkUsernameDebounced(this.value)" />
+          <span class="form-error" id="usernameMsg"></span>
         </div>
         <div class="form-group">
           <label class="form-label">Bio</label>
-          <textarea class="form-control" id="cpBio" rows="3" maxlength="200"></textarea>
+          <textarea class="form-control" id="cpBio" placeholder="Tell us about yourself..." rows="3" maxlength="200"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Skills <span style="color:var(--text-muted);font-weight:400;">(press Enter to add)</span></label>
+          <div class="tags-input-wrap" onclick="this.querySelector('.tags-input').focus()">
+            <div id="skillTags"></div>
+            <input class="tags-input" id="skillInput" placeholder="e.g. React, Java, Kafka..." onkeydown="handleTagInput(event,'skill')" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Interests <span style="color:var(--text-muted);font-weight:400;">(press Enter to add)</span></label>
+          <div class="tags-input-wrap" onclick="this.querySelector('.tags-input').focus()">
+            <div id="interestTags"></div>
+            <input class="tags-input" id="interestInput" placeholder="e.g. DevOps, ML, Web..." onkeydown="handleTagInput(event,'interest')" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">GitHub URL</label>
+          <div class="input-with-icon">
+            <span class="input-icon">🔗</span>
+            <input type="url" class="form-control" id="cpGithub" placeholder="https://github.com/username" />
+          </div>
         </div>
         <button type="submit" class="btn btn-primary w-full" id="createProfileBtn">Create Profile</button>
       </form>
@@ -220,17 +425,29 @@
   </div>
 
   <div class="toast-container"></div>
+
   <script src="app.js"></script>
   <script>
-    if (auth.isLoggedIn()) window.location.href = 'feed.html';
+    const profileTags = { skill: [], interest: [] };
     let currentOtpEmail = '';
     let otpTimerInterval = null;
+    let usernameCheckTimeout = null;
+
+    // Redirect if already logged in
+    if (auth.isLoggedIn()) window.location.href = 'feed.html';
 
     function showSection(name, tab = null) {
       document.getElementById('landingSection').style.display = name === 'landing' ? '' : 'none';
       document.getElementById('authSection').style.display = name === 'auth' ? '' : 'none';
       if (name === 'auth') {
         showStep(tab === 'login' ? 'stepLogin' : 'stepRegister');
+        if (tab === 'login') {
+          document.getElementById('tabLogin').classList.add('active');
+          document.getElementById('tabRegister').classList.remove('active');
+        } else {
+          document.getElementById('tabLogin').classList.remove('active');
+          document.getElementById('tabRegister').classList.add('active');
+        }
       }
     }
 
@@ -241,7 +458,7 @@
     function showStep(stepId) {
       document.querySelectorAll('.auth-step').forEach(s => s.classList.remove('active'));
       const el = document.getElementById(stepId);
-      if (el) el.classList.add('active');
+      if (el) { el.classList.add('active'); el.classList.add('scale-in'); }
     }
 
     async function handleLogin(e) {
@@ -250,7 +467,10 @@
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> Signing in...';
       try {
-        const res = await api.login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
+        const res = await api.login(
+          document.getElementById('loginEmail').value,
+          document.getElementById('loginPassword').value
+        );
         api.setToken(res.token);
         auth.setUser({ email: res.email });
         toast('Welcome back!', 'success');
@@ -266,13 +486,15 @@
     async function handleRegister(e) {
       e.preventDefault();
       const pw = document.getElementById('regPassword').value;
-      if (pw !== document.getElementById('regConfirm').value) {
+      const confirm = document.getElementById('regConfirm').value;
+      if (pw !== confirm) {
         document.getElementById('confirmError').classList.add('show');
         return;
       }
       document.getElementById('confirmError').classList.remove('show');
       const btn = document.getElementById('registerBtn');
       btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Creating account...';
       try {
         currentOtpEmail = document.getElementById('regEmail').value;
         await api.register(currentOtpEmail, pw);
@@ -280,10 +502,12 @@
         showStep('stepOtp');
         initOtpInputs();
         startOtpTimer(300);
+        toast('OTP sent to your email!', 'success');
       } catch (err) {
         toast(err.message || 'Registration failed', 'error');
       } finally {
         btn.disabled = false;
+        btn.innerHTML = 'Create Account';
       }
     }
 
@@ -291,24 +515,69 @@
       const inputs = document.querySelectorAll('#otpInputs .otp-input');
       inputs.forEach((inp, i) => {
         inp.value = '';
+        inp.classList.remove('filled');
         inp.addEventListener('input', () => {
-          if (inp.value && i < inputs.length - 1) inputs[i+1].focus();
+          inp.classList.toggle('filled', inp.value.length > 0);
+          if (inp.value && i < inputs.length - 1) inputs[i + 1].focus();
+        });
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !inp.value && i > 0) inputs[i - 1].focus();
+        });
+        inp.addEventListener('paste', (e) => {
+          const data = e.clipboardData.getData('text').replace(/\D/g,'').slice(0,6);
+          if (data) {
+            inputs.forEach((inp2, j) => {
+              inp2.value = data[j] || '';
+              inp2.classList.toggle('filled', !!inp2.value);
+            });
+            e.preventDefault();
+          }
         });
       });
       inputs[0].focus();
     }
 
+    function getOtpValue() {
+      return Array.from(document.querySelectorAll('#otpInputs .otp-input')).map(i => i.value).join('');
+    }
+
+    function startOtpTimer(seconds) {
+      clearInterval(otpTimerInterval);
+      const timerEl = document.getElementById('otpTimer');
+      const resendBtn = document.getElementById('resendBtn');
+      resendBtn.disabled = true;
+      let remaining = seconds;
+      timerEl.textContent = ` (${Math.floor(remaining/60)}:${String(remaining%60).padStart(2,'0')})`;
+      otpTimerInterval = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+          clearInterval(otpTimerInterval);
+          timerEl.textContent = '';
+          resendBtn.disabled = false;
+        } else {
+          timerEl.textContent = ` (${Math.floor(remaining/60)}:${String(remaining%60).padStart(2,'0')})`;
+        }
+      }, 1000);
+    }
+
     async function handleVerifyOtp(e) {
       e.preventDefault();
-      const otp = Array.from(document.querySelectorAll('#otpInputs .otp-input')).map(i => i.value).join('');
+      const otp = getOtpValue();
       if (otp.length < 6) { toast('Enter the full 6-digit code', 'error'); return; }
+      const btn = document.getElementById('otpBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Verifying...';
       try {
         const res = await api.verifyOtp(currentOtpEmail, otp);
         api.setToken(res.token);
         auth.setUser({ email: res.email });
+        toast('Account verified!', 'success');
         openModal('createProfileModal');
       } catch (err) {
         toast(err.message || 'Invalid OTP', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Verify Code';
       }
     }
 
@@ -318,26 +587,16 @@
         toast('OTP resent!', 'success');
         startOtpTimer(300);
       } catch (err) {
-        toast(err.message || 'Failed', 'error');
+        toast(err.message || 'Failed to resend', 'error');
       }
-    }
-
-    function startOtpTimer(s) {
-      clearInterval(otpTimerInterval);
-      let r = s;
-      document.getElementById('otpTimer').textContent = ` (${Math.floor(r/60)}:${String(r%60).padStart(2,'0')})`;
-      otpTimerInterval = setInterval(() => {
-        r--;
-        if (r <= 0) { clearInterval(otpTimerInterval); document.getElementById('otpTimer').textContent = ''; }
-        else document.getElementById('otpTimer').textContent = ` (${Math.floor(r/60)}:${String(r%60).padStart(2,'0')})`;
-      }, 1000);
     }
 
     async function handleForgotPassword(e) {
       e.preventDefault();
+      const email = document.getElementById('forgotEmail').value;
       try {
-        await api.sendResetOtp(document.getElementById('forgotEmail').value);
-        currentOtpEmail = document.getElementById('forgotEmail').value;
+        await api.sendResetOtp(email);
+        currentOtpEmail = email;
         toast('Reset code sent!', 'success');
         showStep('stepReset');
       } catch (err) {
@@ -348,14 +607,19 @@
     async function handleResetPassword(e) {
       e.preventDefault();
       try {
-        await api.resetPassword(currentOtpEmail, document.getElementById('resetOtp').value, document.getElementById('newPassword').value);
-        toast('Password reset!', 'success');
+        await api.resetPassword(
+          currentOtpEmail,
+          document.getElementById('resetOtp').value,
+          document.getElementById('newPassword').value
+        );
+        toast('Password reset! Please sign in.', 'success');
         showStep('stepLogin');
       } catch (err) {
-        toast(err.message || 'Failed', 'error');
+        toast(err.message || 'Failed to reset password', 'error');
       }
     }
 
+    // Profile creation
     function previewProfilePic(input) {
       const file = input.files[0];
       if (!file) return;
@@ -365,19 +629,87 @@
       document.getElementById('picPlaceholder').style.display = 'none';
     }
 
+    function handleTagInput(e, type) {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const input = document.getElementById(type === 'skill' ? 'skillInput' : 'interestInput');
+        const val = input.value.trim().replace(/,/g,'');
+        if (val && !profileTags[type].includes(val)) {
+          profileTags[type].push(val);
+          renderTags(type);
+        }
+        input.value = '';
+      }
+    }
+
+    function renderTags(type) {
+      const container = document.getElementById(type === 'skill' ? 'skillTags' : 'interestTags');
+      container.innerHTML = '';
+      profileTags[type].forEach((tag, i) => {
+        const span = document.createElement('span');
+        span.className = `tag-item`;
+        span.innerHTML = `${tag}<button class="tag-remove" onclick="removeTag('${type}',${i})">×</button>`;
+        container.appendChild(span);
+      });
+    }
+
+    function removeTag(type, i) {
+      profileTags[type].splice(i, 1);
+      renderTags(type);
+    }
+
+    function checkUsernameDebounced(val) {
+      clearTimeout(usernameCheckTimeout);
+      const msg = document.getElementById('usernameMsg');
+      if (!val) { msg.textContent = ''; msg.classList.remove('show'); return; }
+      usernameCheckTimeout = setTimeout(async () => {
+        try {
+          const res = await api.checkUsername(val);
+          if (res.available) {
+            msg.textContent = '✓ Username available';
+            msg.style.color = 'var(--success)';
+            msg.classList.add('show');
+          } else {
+            msg.textContent = '✗ Username taken';
+            msg.style.color = 'var(--error)';
+            msg.classList.add('show');
+          }
+        } catch {}
+      }, 500);
+    }
+
     async function handleCreateProfile(e) {
       e.preventDefault();
+      const username = document.getElementById('cpUsername').value.trim();
+      if (!username) { toast('Username is required', 'error'); return; }
       const picInput = document.getElementById('profilePicInput');
       if (!picInput.files[0]) { toast('Please upload a profile photo', 'error'); return; }
+
       const fd = new FormData();
-      fd.append('profile', JSON.stringify({username: document.getElementById('cpUsername').value, bio: document.getElementById('cpBio').value}));
+      const profileData = {
+        username,
+        bio: document.getElementById('cpBio').value,
+        skills: profileTags.skill,
+        interests: profileTags.interest,
+        githubUrl: document.getElementById('cpGithub').value || null
+      };
+      fd.append('profile', JSON.stringify(profileData));
       fd.append('profilePic', picInput.files[0]);
+
+      const btn = document.getElementById('createProfileBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Creating...';
       try {
-        await api.createProfile(fd);
+        const profile = await api.createProfile(fd);
+        localStorage.setItem('techilla_profile', JSON.stringify(profile));
+        toast('Profile created!', 'success');
         closeModal('createProfileModal');
-        window.location.href = 'feed.html';
+        setTimeout(() => window.location.href = 'feed.html', 500);
       } catch (err) {
-        toast(err.message || 'Failed', 'error');
+        toast(err.message || 'Failed to create profile', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Create Profile';
       }
     }
   </script>
