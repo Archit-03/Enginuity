@@ -9,104 +9,182 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <style>
-    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 64px; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
-    .navbar-nav { display: flex; align-items: center; gap: 8px; }
-    .nav-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: transparent; border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--text-secondary); font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; }
-    .nav-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; cursor: pointer; }
-    .main-layout { padding-top: 64px; }
-    .main-content { max-width: 800px; margin: 0 auto; padding: 24px; }
-    .profile-hero { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 24px; }
-    .profile-banner { height: 180px; background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,119,204,0.1)); }
-    .profile-info { padding: 0 32px 28px; display: flex; gap: 24px; align-items: flex-end; position: relative; }
-    .profile-avatar-wrap { margin-top: -60px; }
-    .profile-avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--bg-card); background: var(--bg-hover); display: block; }
-    .profile-meta { flex: 1; padding-bottom: 4px; }
-    .profile-name { font-size: 24px; font-weight: 800; }
-    .profile-handle { font-size: 15px; color: var(--text-muted); margin-top: 2px; }
-    .profile-bio { font-size: 15px; color: var(--text-secondary); margin-top: 10px; }
-    .profile-stats { display: flex; gap: 32px; margin-top: 16px; }
-    .stat-item { }
-    .stat-value { font-size: 22px; font-weight: 800; }
-    .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
-    .profile-actions { display: flex; gap: 10px; }
-    .spinner-lg { width: 40px; height: 40px; border-width: 3px; }
+    .profile-tabs {
+      display: flex; gap: 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      overflow: hidden;
+    }
+    .profile-tab {
+      flex: 1; padding: 14px;
+      background: transparent; border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted); font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: var(--transition);
+      font-family: var(--font);
+    }
+    .profile-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .profile-tab:hover:not(.active) { color: var(--text-primary); background: var(--bg-hover); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .github-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--accent); text-decoration: none; font-size: 14px;
+      padding: 4px 10px; background: var(--accent-dim);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: var(--radius-full);
+      transition: var(--transition);
+    }
+    .github-link:hover { background: var(--accent); color: #000; }
+    .reel-grid-empty {
+      grid-column: 1 / -1;
+      padding: 60px; text-align: center;
+      color: var(--text-muted);
+    }
+    .no-profile-wrap {
+      display: flex; align-items: center; justify-content: center;
+      min-height: calc(100vh - 64px);
+    }
   </style>
 </head>
 <body>
+  <!-- NAVBAR -->
   <nav class="navbar">
     <a href="feed.html" class="navbar-brand">
       <div class="navbar-logo">T</div>
       <span class="navbar-title">Tech<span>illa</span></span>
     </a>
+    <div class="navbar-search">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search developers..." autocomplete="off" oninput="handleProfileSearch(this.value)" />
+      <div class="search-results" id="searchResults"></div>
+    </div>
     <div class="navbar-nav">
       <a href="feed.html" class="nav-btn">🏠 Feed</a>
-      <a href="upload.html" class="nav-btn primary" style="background:var(--accent);color:#000;">+ Upload</a>
-      <img id="navAvatar" class="nav-avatar" src="" alt="Profile" />
+      <a href="upload.html" class="nav-btn primary">+ Upload</a>
+      <img id="navAvatar" class="nav-avatar" src="" alt="Profile" onclick="window.location.href='profile.html'" />
     </div>
   </nav>
 
+  <!-- LAYOUT -->
   <div class="main-layout">
+    <aside class="sidebar-left">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Navigate</div>
+        <a href="feed.html" class="sidebar-link"><span class="icon">🏠</span> Feed</a>
+        <a href="profile.html" class="sidebar-link active"><span class="icon">👤</span> Profile</a>
+        <a href="upload.html" class="sidebar-link"><span class="icon">🎬</span> Upload Reel</a>
+        <a href="feed.html?filter=saved" class="sidebar-link"><span class="icon">🔖</span> Saved</a>
+      </div>
+      <a href="profile.html" class="sidebar-user" id="sidebarUser">
+        <img id="sidebarAvatar" class="sidebar-user-avatar" src="" alt="" />
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUsername">Loading...</div>
+          <div class="sidebar-user-handle" id="sidebarHandle">@—</div>
+        </div>
+      </a>
+    </aside>
+
     <main class="main-content">
-      <div id="profileWrapper">
-        <div class="loading-overlay" style="padding:60px;">
-          <div class="spinner spinner-lg"></div>
-          <span>Loading profile...</span>
+      <div class="profile-wrapper" id="profileWrapper">
+        <!-- Loading state -->
+        <div class="skeleton-card">
+          <div style="height:180px; background:var(--bg-hover); border-radius:var(--radius-lg) var(--radius-lg) 0 0;" class="skeleton"></div>
+          <div style="padding:24px; display:flex; gap:20px; align-items:flex-end;">
+            <div style="width:120px;height:120px;border-radius:50%;margin-top:-60px;" class="skeleton"></div>
+            <div style="flex:1; padding-bottom:8px;">
+              <div class="skeleton skeleton-line" style="width:50%;height:24px;"></div>
+              <div class="skeleton skeleton-line" style="width:35%;"></div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
+
+    <aside class="sidebar-right">
+      <div id="profileSidebarContent"></div>
+    </aside>
+  </div>
+
+  <!-- EDIT PROFILE MODAL -->
+  <div class="modal-overlay" id="editProfileModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Profile</h3>
+        <button class="modal-close" onclick="closeModal('editProfileModal')">✕</button>
+      </div>
+      <form onsubmit="handleEditProfile(event)">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-control" id="editUsername" placeholder="your_handle" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bio</label>
+          <textarea class="form-control" id="editBio" rows="3" maxlength="200" placeholder="Tell the community about yourself..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Skills</label>
+          <div class="tags-input-wrap" onclick="this.querySelector('.tags-input').focus()">
+            <div id="editSkillTags"></div>
+            <input class="tags-input" id="editSkillInput" placeholder="Add skill, press Enter..." onkeydown="handleEditTag(event,'skill')" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Interests</label>
+          <div class="tags-input-wrap" onclick="this.querySelector('.tags-input').focus()">
+            <div id="editInterestTags"></div>
+            <input class="tags-input" id="editInterestInput" placeholder="Add interest, press Enter..." onkeydown="handleEditTag(event,'interest')" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">GitHub URL</label>
+          <div class="input-with-icon">
+            <span class="input-icon">🔗</span>
+            <input type="url" class="form-control" id="editGithub" placeholder="https://github.com/username" />
+          </div>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button type="submit" class="btn btn-primary" style="flex:1;" id="saveProfileBtn">Save Changes</button>
+          <button type="button" class="btn btn-ghost" onclick="closeModal('editProfileModal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT PROFILE PIC MODAL -->
+  <div class="modal-overlay" id="editPicModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Update Profile Photo</h3>
+        <button class="modal-close" onclick="closeModal('editPicModal')">✕</button>
+      </div>
+      <div style="text-align:center; padding:20px 0;">
+        <div id="newPicPreview" style="width:120px;height:120px;border-radius:50%;background:var(--bg-hover);border:3px dashed var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:48px;overflow:hidden;position:relative;cursor:pointer;">
+          <span id="newPicPlaceholder">📷</span>
+          <img id="newPicImg" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" />
+          <input type="file" id="newPicInput" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;" onchange="previewNewPic(this)" />
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('newPicInput').click()">Choose Photo</button>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-primary" style="flex:1;" onclick="handleUpdatePic()">Update Photo</button>
+        <button class="btn btn-danger btn-sm" onclick="handleDeletePic()">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIDEO VIEWER -->
+  <div class="video-modal-overlay" id="videoModal">
+    <button class="video-modal-close" onclick="closeVideoModal()">✕</button>
+    <div class="video-modal-content">
+      <video id="modalVideo" class="video-modal-video" controls autoplay></video>
+    </div>
   </div>
 
   <div class="toast-container"></div>
+
   <script src="app.js"></script>
-  <script>
-    if (!requireAuth()) throw new Error('Not authenticated');
-
-    async function init() {
-      try {
-        const profile = await api.getMyProfile(0, 1);
-        const avatar = avatarUrl(profile.profilePictureUrl, profile.username);
-        document.getElementById('navAvatar').src = avatar;
-
-        document.getElementById('profileWrapper').innerHTML = `
-          <div class="profile-hero">
-            <div class="profile-banner"></div>
-            <div class="profile-info">
-              <div class="profile-avatar-wrap">
-                <img class="profile-avatar" src="${avatar}" />
-              </div>
-              <div class="profile-meta">
-                <div class="profile-name">${profile.username}</div>
-                <div class="profile-handle">@${profile.username}</div>
-                ${profile.bio ? `<div class="profile-bio">${profile.bio}</div>` : ''}
-                <div class="profile-stats">
-                  <div class="stat-item">
-                    <div class="stat-value">${(profile.reels || []).length}</div>
-                    <div class="stat-label">Reels</div>
-                  </div>
-                  <div class="stat-item">
-                    <div class="stat-value">${profile.followerCount || 0}</div>
-                    <div class="stat-label">Followers</div>
-                  </div>
-                </div>
-              </div>
-              <div class="profile-actions">
-                <button class="btn btn-secondary" onclick="handleLogout()">↩ Sign Out</button>
-              </div>
-            </div>
-          </div>
-        `;
-      } catch (err) {
-        document.getElementById('profileWrapper').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Error loading profile</div></div>`;
-      }
-    }
-
-    async function handleLogout() {
-      try { await api.logout(); } catch {}
-      auth.logout();
-      window.location.href = 'index.html';
-    }
-
-    init();
-  </script>
+  <script src="profile.js"></script>
 </body>
 </html>
