@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload — Techilla</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 64px; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+    .navbar-nav { display: flex; align-items: center; gap: 8px; }
+    .nav-btn { padding: 8px 16px; background: transparent; border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--text-secondary); font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; }
+    .nav-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; cursor: pointer; }
+    .main-layout { padding-top: 64px; }
+    .main-content { max-width: 680px; margin: 0 auto; padding: 24px; }
+    .upload-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 40px; }
+    .upload-title { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+    .upload-subtitle { font-size: 15px; color: var(--text-secondary); margin-bottom: 32px; }
+    .drop-zone { border: 2px dashed var(--border); border-radius: var(--radius-lg); padding: 40px; text-align: center; cursor: pointer; transition: all 0.2s ease; background: var(--bg-secondary); position: relative; }
+    .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: var(--accent-dim); }
+    .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .drop-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+    .drop-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .drop-subtitle { font-size: 14px; color: var(--text-muted); }
+    .video-preview-wrap { display: none; position: relative; border-radius: var(--radius-lg); overflow: hidden; background: #000; margin-top: 12px; }
+    .video-preview-wrap.show { display: block; }
+    .video-preview { width: 100%; max-height: 300px; object-fit: contain; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="feed.html" class="navbar-brand">
+      <div class="navbar-logo">T</div>
+      <span class="navbar-title">Tech<span>illa</span></span>
+    </a>
+    <div class="navbar-nav">
+      <a href="feed.html" class="nav-btn">← Back</a>
+      <img id="navAvatar" class="nav-avatar" src="" alt="Profile" />
+    </div>
+  </nav>
+
+  <div class="main-layout">
+    <main class="main-content">
+      <div class="upload-card">
+        <h2 class="upload-title">Upload Your Tech Reel</h2>
+        <p class="upload-subtitle">Share your knowledge with developers worldwide.</p>
+
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="videoFileInput" accept="video/mp4" onchange="handleFileSelect(this)" />
+          <span class="drop-icon">🎬</span>
+          <div class="drop-title">Drop your video here</div>
+          <div class="drop-subtitle">or click to browse</div>
+        </div>
+
+        <div class="video-preview-wrap" id="videoPreviewWrap">
+          <video class="video-preview" id="videoPreview" controls></video>
+        </div>
+
+        <div class="form-group mt-2">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" id="description" rows="4" placeholder="Describe your reel..." maxlength="500"></textarea>
+        </div>
+
+        <button class="btn btn-primary w-full" id="uploadBtn" onclick="handleUpload()" disabled>Upload Reel</button>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast-container"></div>
+  <script src="app.js"></script>
+  <script>
+    if (!requireAuth()) throw new Error('Not authenticated');
+    let selectedFile = null;
+
+    async function init() {
+      try {
+        const profile = await api.getMyProfile(0, 1);
+        document.getElementById('navAvatar').src = avatarUrl(profile.profilePictureUrl, profile.username);
+      } catch {}
+      setupDragDrop();
+    }
+
+    function setupDragDrop() {
+      const dz = document.getElementById('dropZone');
+      dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+      dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+      dz.addEventListener('drop', e => {
+        e.preventDefault();
+        dz.classList.remove('dragover');
+        if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+      });
+    }
+
+    function handleFileSelect(input) {
+      if (input.files[0]) processFile(input.files[0]);
+    }
+
+    function processFile(file) {
+      if (file.type !== 'video/mp4') { toast('Only MP4 videos supported', 'error'); return; }
+      if (file.size > 45 * 1024 * 1024) { toast('File too large (max 45 MB)', 'error'); return; }
+      selectedFile = file;
+      const url = URL.createObjectURL(file);
+      const preview = document.getElementById('videoPreview');
+      preview.src = url;
+      document.getElementById('videoPreviewWrap').classList.add('show');
+      document.getElementById('uploadBtn').disabled = false;
+    }
+
+    async function handleUpload() {
+      if (!selectedFile) { toast('Select a video', 'error'); return; }
+      const desc = document.getElementById('description').value.trim();
+      if (!desc) { toast('Add a description', 'error'); return; }
+      const btn = document.getElementById('uploadBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Uploading...';
+      try {
+        const fd = new FormData();
+        fd.append('reel', JSON.stringify({ description: desc }));
+        fd.append('file', selectedFile);
+        await api.uploadReel(fd);
+        toast('Reel uploaded!', 'success');
+        setTimeout(() => window.location.href = 'feed.html', 1000);
+      } catch (err) {
+        toast(err.message || 'Upload failed', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Upload Reel';
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
